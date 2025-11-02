@@ -22,9 +22,7 @@ export default function RootLayout({
   return (
     // This classname convention of putting it to the dark mode makes sure that it stays in dark thus when we use it in light mode as well. Other Components of ShadCN is not going to affect the design of the app. 
     <html lang="en" className="dark">
-      <body
-        className={`${monaSans.className} antialiased pattern`}
-      >
+      <body className={`${monaSans.className} antialiased pattern`}>
         {children}
         <Toaster />
       </body>
