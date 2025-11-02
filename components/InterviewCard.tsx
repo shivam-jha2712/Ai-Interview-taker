@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React from 'react'
 import { Button } from './ui/button';
 import Link from 'next/link';
+import DisplayTechIcons from './DisplayTechIcons';
 // The process of having all the elements of the interview card in a separate component is called componentization. It helps in reusability and better organization of code.
 
 // Along with that as we are now getting the data from props, we can now make this component dynamic and reusable for different interview cards by passing different data as props.
@@ -47,7 +48,7 @@ const InterviewCard = ({ interviewId, userId, role, type, techstack, createdAt }
                 </div>
 
                 <div className="flex flex-row justify-between">
-                    <p>Tech Icons</p>
+                    <DisplayTechIcons techStack={techstack} />
                     {/* The tech icons that will be used here would be mapped out of the constants that was  under index.ts*/}
                     <Button className="btn-primary">
                         <Link href={feedback
