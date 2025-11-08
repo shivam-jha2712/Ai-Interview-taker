@@ -9,6 +9,9 @@ import Link from "next/link"
 import { toast } from "sonner"
 import FormField from "./FormField"
 import { useRouter } from "next/navigation"
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "@/firebase/client"
+import { signIn, signUp } from "@/lib/actions/auth.action"
 
 
 const authFormSchema = (type: FormType) => {
@@ -37,13 +40,53 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
     // 2. Define a submit handler.
     // And in place of the console logging the values we are routing their values to the corresponding places where it is needed to be sent to. 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             if (type === 'sign-up') {
+                // This is the fireBase logic that is being implemented to destructure the userdata
+                const { name, email, password } = values;
+
+                // This is used to register a new user in the firebase auth and not firestore database using email and password only if the wmail is not already in use.
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                // The above function is only doing the auth logic and not signing it up so for signing up
+
+                const result = await signUp({
+                    uid: userCredential.user.uid,
+                    name: name!,
+                    email,
+                    password,
+                })
+
+                //This is the toast reply for the sucess and error message if the user is not signed up. 
+
+                // The question mark is added as the result variable is undefined thus we need to get its value thus it is added.
+                if (!result?.success) {
+                    toast.error(result?.message);
+                    return;
+                }
+
                 toast.success('Account Created Successfully, Please Sign In');
                 router.push('/sign-in')
             }
+
+            // The sign in logic begins here if the project has the idea of the user if exists.
             else {
+
+                const { email, password } = values;
+                // Here the sign in is being also done on the client side but it be stored on the idToken is being stored on the server side under auth.action.ts
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+                const idToken = await userCredential.user.getIdToken();
+
+                if (!idToken) {
+                    toast.error('Sign in Failed');
+                    return;
+                }
+                // Agar toh aapka idToken present hai toh aap signIn wala auth action utha kr ke token se verify kar ke dikha dijiye nahi toh agar aisa hai ki hai toh error push in kar hi rahe hai toast ke taur pe.
+                await signIn({
+                    email, idToken
+                })
+
                 toast.success('Signed In Successfully');
                 router.push('/')
             }
