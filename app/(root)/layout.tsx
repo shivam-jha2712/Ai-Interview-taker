@@ -6,9 +6,9 @@ import React, { ReactNode } from 'react'
 
 // What is being done here is that the children prop is being passed to the RootLayout component. This children prop contains the content of the specific page that is being rendered within this layout. By including {children} in the JSX, we ensure that the content of the page is displayed within the layout structure defined by RootLayout.
 const RootLayout = async ({ children }: { children: ReactNode }) => {
-    // const isUserAuthenticated = await isAuthenticated();
+    const isUserAuthenticated = await isAuthenticated();
 
-    // if (!isUserAuthenticated) redirect('/sign-in');
+    if (!isUserAuthenticated) redirect('/sign-in');
     return (
         <div className='root-layout'>
             <nav>
