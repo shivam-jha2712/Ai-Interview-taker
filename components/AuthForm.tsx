@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth"
 import { auth } from "@/firebase/client"
 import { signIn, signUp } from "@/lib/actions/auth.action"
-
+import { useState } from "react"
+import { Eye, EyeOff } from "lucide-react"
 
 const authFormSchema = (type: FormType) => {
     return z.object({
@@ -37,6 +38,9 @@ const AuthForm = ({ type }: { type: FormType }) => {
             password: "",
         },
     })
+
+    // 👇 state for show / hide password
+    const [showPassword, setShowPassword] = useState(false)
 
     // 2. Define a submit handler.
     // And in place of the console logging the values we are routing their values to the corresponding places where it is needed to be sent to. 
@@ -102,7 +106,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
             <div className="flex flex-col gap-6 card py-14 px-10">
                 <div className="flex flex-roe gap-2 justify-center">
                     <Image src="/logo.svg" alt="logo" height={32} width={38} />
-                    <h2 className="text-primary-100">PrepGPT</h2>
+                    <h2 className="text-primary-100">PrepareGPT</h2>
                 </div>
                 <h3>Practice Job Interviews with AI</h3>
 
@@ -123,13 +127,29 @@ const AuthForm = ({ type }: { type: FormType }) => {
                             placeholder="Enter Your Email"
                             type="email"
                         />
-                        <FormField
-                            control={form.control}
-                            name="password"
-                            label="Password"
-                            placeholder="Enter Your Password"
-                            type="password"
-                        />
+                        <div className="relative">
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                label="Password"
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Enter Your Password"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-6 w-6 mr-4 mb-1" />
+                                ) : (
+                                    <Eye className="h-6 w-6 mr-4 mb-7" />
+                                )}
+                            </button>
+                        </div>
+
                         <Button className="btn" type="submit">{isSignIn ? 'Sign in' : 'Create an Account'}</Button>
                     </form>
                 </Form>
